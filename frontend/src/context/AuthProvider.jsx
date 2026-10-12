@@ -36,7 +36,7 @@ const AuthProvider = ({children}) => {
     <div>
       <AuthContext.Provider 
       value={{
-        user,loading
+        user,setUser,loading
       }}
       >
         {children}

@@ -1,6 +1,5 @@
 import express from "express"
 import {
-    getPendingStudents,
     isLogin,
     login,
     logout,
@@ -14,7 +13,7 @@ router.post("/register", register)
 router.post("/login", login)
 router.post("/logout", logout)
 
-router.get("/check-login", checkUserLogin, isApproved, isLogin);
-router.get("/pending-students", checkUserLogin, getPendingStudents);
+router.get("/check-login", checkUserLogin,  isLogin);
+
 export default router
 

@@ -7,10 +7,12 @@ const PublicRoute = ({children}) => {
         return <h2>authentication checking...</h2>
     }
     if(user){
-        if(user.role === "user"){
-          return  <Navigate to="/home" replace/>
+        if(user.role === "student"){
+          return  <Navigate to="/student-dashboard" replace/>
         }
-        
+        else if(user.role === "librarian"){
+          return  <Navigate to="/lib-dashboard" replace/>
+        }
         
     }
 

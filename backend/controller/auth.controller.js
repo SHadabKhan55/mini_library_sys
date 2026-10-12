@@ -115,24 +115,6 @@ export async function isLogin(req, res) {
 
 }
 
-export async function getPendingStudents(req, res) {
-    try {
-        const students = await User.find({
-            role: "student",
-            isApproved: false
-        }).select("-password");
-
-        return res.status(200).json({
-            success: true,
-            students
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch pending students"
-        });
-    }
-}
 
 export function logout(req, res) {
     try {

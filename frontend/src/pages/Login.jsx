@@ -1,9 +1,10 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {useAuth} from "../context/AuthProvider"
 
 const Login = () => {
-
+    const {setUser:setAuthUser} = useAuth()
     const navigate = useNavigate();
     const [loading,setLoading] = useState(false)
     const [user, setUser] = useState({
@@ -33,7 +34,7 @@ const Login = () => {
                 {withCredentials:true}
             );
             let loginUser = res.data.user
-            console.log(loginUser)
+            setAuthUser(loginUser)
             if (loginUser.role === "librarian") {
                 
                 navigate("/lib-dashboard");
