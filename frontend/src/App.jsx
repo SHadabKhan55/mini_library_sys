@@ -8,6 +8,7 @@ import Student_dashboard from './pages/student/Dashboard'
 import PublicRoute from './components/PublicRoute'
 import LibrarianLayout from './layout/LibrarianLayout'
 import AddCategory from './pages/librarian/AddCategory'
+import EditCategory from './pages/librarian/EditCategory'
 
 
 const App = () => {
@@ -48,6 +49,10 @@ const App = () => {
         {
          path:"categories",
           element: <AddCategory/>
+        },
+        {
+         path:"edit-categories/:id",
+          element: <EditCategory/>
         },
       ]
     },
