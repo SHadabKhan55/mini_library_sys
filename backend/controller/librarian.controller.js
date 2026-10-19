@@ -59,163 +59,167 @@ export async function approveStudent(req, res) {
 
 
 export const createCategory = async (req, res) => {
-  try {
-    const { name, description } = req.body;
+    try {
+        const { name, description } = req.body;
 
-    const category = await Category.findOne({name})
-    if(category){
+        const category = await Category.findOne({ name })
+        if (category) {
 
-        return res.status(409).json({
-          success: false,
-          message: "Category already exist",
-          
+            return res.status(409).json({
+                success: false,
+                message: "Category already exist",
+
+            });
+        }
+        const newCategory = await Category.create({
+            name,
+            description,
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Category created successfully",
+            data: newCategory,
+        });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            message: error.message,
         });
     }
-    const newCategory = await Category.create({
-      name,
-      description,
-    });
-
-    return res.status(201).json({
-      success: true,
-      message: "Category created successfully",
-      data: newCategory,
-    });
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };
 
 export const getCategory = async (req, res) => {
-  try {
-    
-    const category = await Category.find()
-    if(category.length === 0){
+    try {
+        let page = parseInt(req.query.page) || 1;
+        let limit = 5;
+        let skip = (page - 1) * limit;
 
-        return res.status(404).json({
-          success: false,
-          message: "Categories not found",
-          
+        const categories = await Category.find()
+            .sort({_id:-1})
+            .skip(skip)
+            .limit(limit)
+
+        const totalCategories = await Category.countDocuments();
+        const totalPages = Math.ceil(totalCategories / limit)
+        console.log(totalPages)
+        return res.status(200).json({
+            success: true,
+            message: "category fetch successfull",
+            categories,
+            totalPages,
+        })
+
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Fetch categories failed due to server error"
         });
     }
-
-    return res.status(200).json({
-      success: true,
-      message: "Category fetch successfully",
-      data: category,
-    });
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };
 
 export const singleCategory = async (req, res) => {
-  try {
-    const { id } = req.params;
+    try {
+        const { id } = req.params;
 
-    const category = await Category.findById(id);
+        const category = await Category.findById(id);
 
-    if (!category) {
-      return res.status(404).json({
-        success: false,
-        message: "Category not found",
-      });
+        if (!category) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Category fetched successfully",
+            data: category,
+        });
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
-
-    return res.status(200).json({
-      success: true,
-      message: "Category fetched successfully",
-      data: category,
-    });
-  } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };
 
 
 export const updateCategory = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, description } = req.body;
+    try {
+        const { id } = req.params;
+        const { name, description } = req.body;
 
-    const category = await Category.findByIdAndUpdate(
-      id,
-      {
-        name,
-        description,
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+        const category = await Category.findByIdAndUpdate(
+            id,
+            {
+                name,
+                description,
+            },
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
 
-    if (!category) {
-      return res.status(404).json({
-        success: false,
-        message: "Category not found",
-      });
+        if (!category) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Category updated successfully",
+            data: category,
+        });
+    } catch (error) {
+        console.log(error);
+
+        if (error.code === 11000) {
+            return res.status(409).json({
+                success: false,
+                message: "Category name already exists",
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
-
-    return res.status(200).json({
-      success: true,
-      message: "Category updated successfully",
-      data: category,
-    });
-  } catch (error) {
-    console.log(error);
-
-    if (error.code === 11000) {
-      return res.status(409).json({
-        success: false,
-        message: "Category name already exists",
-      });
-    }
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };
 
 export const deleteCategory = async (req, res) => {
-  try {
-    const { id } = req.params;
+    try {
+        const { id } = req.params;
 
-    const category = await Category.findByIdAndDelete(id);
+        const category = await Category.findByIdAndDelete(id);
 
-    if (!category) {
-      return res.status(404).json({
-        success: false,
-        message: "Category not found",
-      });
+        if (!category) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Category deleted successfully",
+            data: category,
+        });
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
-
-    return res.status(200).json({
-      success: true,
-      message: "Category deleted successfully",
-      data: category,
-    });
-  } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };

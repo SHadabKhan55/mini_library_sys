@@ -19,7 +19,7 @@ router.patch("/approve-student/:id", checkUserLogin, approveStudent);
 
 // Categories
 router.post("/add-category", checkUserLogin, createCategory);
-router.get("/categories", checkUserLogin, getCategory);
+router.get("/categories",  getCategory);
 router.get("/categories/:id", checkUserLogin, singleCategory);
 router.put("/categories/:id", checkUserLogin, updateCategory);
 router.delete("/categories/:id", checkUserLogin, deleteCategory);
