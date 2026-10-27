@@ -9,6 +9,7 @@ import PublicRoute from './components/PublicRoute'
 import LibrarianLayout from './layout/LibrarianLayout'
 import AddCategory from './pages/librarian/AddCategory'
 import EditCategory from './pages/librarian/EditCategory'
+import AddBook from './pages/librarian/AddBook'
 
 
 const App = () => {
@@ -49,6 +50,10 @@ const App = () => {
         {
          path:"categories",
           element: <AddCategory/>
+        },
+        {
+         path:"book",
+          element: <AddBook/>
         },
         {
          path:"edit-categories/:id",

@@ -1,5 +1,6 @@
 import User from "../model/user.model.js";
 import Category from "../model/category.model.js";
+import Book from "../model/book.model.js";
 
 export async function getPendingStudents(req, res) {
     try {
@@ -93,17 +94,23 @@ export const createCategory = async (req, res) => {
 export const getCategory = async (req, res) => {
     try {
         let page = parseInt(req.query.page) || 1;
-        let limit = 5;
+        let limit = req.query.limit === "all" ? 0 :5;
         let skip = (page - 1) * limit;
-
-        const categories = await Category.find()
+        let categories;
+        if (req.query.limit === "all") {
+            
+             categories = await Category.find()
+        } else {
+            
+             categories = await Category.find()
             .sort({_id:-1})
             .skip(skip)
             .limit(limit)
+        }
 
         const totalCategories = await Category.countDocuments();
-        const totalPages = Math.ceil(totalCategories / limit)
-        console.log(totalPages)
+        const totalPages = limit === 0 ? 0 : Math.ceil(totalCategories / limit)
+        
         return res.status(200).json({
             success: true,
             message: "category fetch successfull",
@@ -222,4 +229,31 @@ export const deleteCategory = async (req, res) => {
             message: error.message,
         });
     }
+};
+
+
+
+export const createBook = async (req, res) => {
+  try {
+    const { title, author, price, quantity, category } = req.body;
+
+    const book = await Book.create({
+      title,
+      author,
+      price,
+      quantity,
+      category,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Book created successfully",
+      book,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

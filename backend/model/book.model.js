@@ -12,12 +12,7 @@ const bookSchema = new mongoose.Schema(
       required: [true, "Author name is required"],
       trim: true,
     },
-    isbn: {
-      type: String,
-      unique: true,
-      sparse: true,
-      trim: true,
-    },
+    
     price: {
       type: Number,
       required: [true, "Price is required"],
@@ -36,6 +31,7 @@ const bookSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    versionKey:false
   }
 );
 

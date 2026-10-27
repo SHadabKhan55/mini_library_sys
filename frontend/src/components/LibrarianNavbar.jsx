@@ -10,14 +10,15 @@ function LibrarianNavbar() {
         },
         {
             id: 2,
-            title: "Add Category",
+            title: "Manage Category",
             path: "/lib-dashboard/categories"
         },
         {
             id: 3,
-            title: "Manage Students",
-            path: "/lib-dashboard/students"
-        }
+            title: "Manage Book",
+            path: "/lib-dashboard/book"
+        },
+        
     ];
 
     return (
