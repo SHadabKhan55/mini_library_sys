@@ -43,7 +43,12 @@ const AddBook = () => {
             [name]: value
         })
     }
-
+    function handleSelectCategory(e) {
+        setBook({
+            ...book,
+            category:e ? e.value : ""
+        })
+    }
     async function handleSubmit(e) {
         e.preventDefault()
 
@@ -70,7 +75,7 @@ const AddBook = () => {
         value: category._id,
         label: category.name
     }))
-
+console.log(categoryOptions)
     return (
         <div>
             <h2>Add Book</h2>
@@ -121,23 +126,11 @@ const AddBook = () => {
                 <label>Category</label><br />
 
                 <Select
-                    options={categoryOptions}
-                    placeholder="Search or select category..."
-                    isSearchable={true}
-                    isClearable={true}
-                    onChange={(selectedOption) =>
-                        setBook({
-                            ...book,
-                            category: selectedOption
-                                ? selectedOption.value
-                                : ""
-                        })
-                    }
-                    value={
-                        categoryOptions.find(
-                            (option) => option.value === book.category
-                        ) || null
-                    }
+                options={categoryOptions}
+                placeholder="Search or select category..."
+                isClearable={true}
+                onChange={handleSelectCategory}
+                value={categoryOptions.find(opt => opt.value === book.category) || null}
                 />
 
                 <br />

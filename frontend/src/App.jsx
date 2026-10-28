@@ -10,6 +10,7 @@ import LibrarianLayout from './layout/LibrarianLayout'
 import AddCategory from './pages/librarian/AddCategory'
 import EditCategory from './pages/librarian/EditCategory'
 import AddBook from './pages/librarian/AddBook'
+import Book from './pages/librarian/Book'
 
 
 const App = () => {
@@ -53,6 +54,10 @@ const App = () => {
         },
         {
          path:"book",
+          element: <Book/>
+        },
+        {
+         path:"add-book",
           element: <AddBook/>
         },
         {

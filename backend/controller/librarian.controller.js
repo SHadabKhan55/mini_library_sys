@@ -231,7 +231,9 @@ export const deleteCategory = async (req, res) => {
     }
 };
 
-
+//=============================================
+//                  Books Api
+//=============================================
 
 export const createBook = async (req, res) => {
   try {
@@ -256,4 +258,44 @@ export const createBook = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+
+ 
+export const getBooks = async (req, res) => {
+    try {
+        let page = parseInt(req.query.page) || 1;
+        let limit = req.query.limit === "all" ? 0 :5;
+        let skip = (page - 1) * limit;
+        let book;
+        if (req.query.limit === "all") {
+            
+             book = await Book.find()
+        } else {
+            
+             book = await Book.find()
+             .populate('category')
+            .sort({_id:-1})
+            .skip(skip)
+            .limit(limit)
+        }
+
+        const totalCategories = await Book.countDocuments();
+        const totalPages = limit === 0 ? 0 : Math.ceil(totalCategories / limit)
+        
+        return res.status(200).json({
+            success: true,
+            message: "category fetch successfull",
+            book,
+            totalPages,
+        })
+
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Fetch categories failed due to server error"
+        });
+    }
 };

@@ -9,7 +9,8 @@ import {
     updateCategory,
     deleteCategory,
     getPendingStudents,
-    createBook
+    createBook,
+    getBooks
 } from "../controller/librarian.controller.js";
 
 const router = express.Router();
@@ -24,6 +25,9 @@ router.get("/categories", checkUserLogin,  getCategory);
 router.get("/categories/:id", checkUserLogin, singleCategory);
 router.put("/categories/:id", checkUserLogin, updateCategory);
 router.delete("/categories/:id", checkUserLogin, deleteCategory);
+
+// Books
 router.post("/add-book", checkUserLogin, createBook);
+router.get("/book", checkUserLogin, getBooks);
 
 export default router;
