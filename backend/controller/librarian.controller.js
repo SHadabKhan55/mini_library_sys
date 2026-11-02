@@ -265,37 +265,60 @@ export const createBook = async (req, res) => {
 export const getBooks = async (req, res) => {
     try {
         let page = parseInt(req.query.page) || 1;
-        let limit = req.query.limit === "all" ? 0 :5;
-        let skip = (page - 1) * limit;
+        let limit = req.query.limit === "all" ? 0 : 5;
+        let search = req.query.search || "";
+
         let book;
+        let skip = (page - 1) * limit;
+
+        // Search query
+        let query = {};
+
+        if (search) {
+            query.title = {
+                $regex: search,
+                $options: "i"
+            };
+        }
+        
+
+
         if (req.query.limit === "all") {
-            
-             book = await Book.find()
+
+            book = await Book.find(query)
+                .populate('category')
+                .sort({ _id: -1 });
+
         } else {
-            
-             book = await Book.find()
-             .populate('category')
-            .sort({_id:-1})
-            .skip(skip)
-            .limit(limit)
+
+            book = await Book.find(query)
+                .populate('category')
+                .sort({ _id: -1 })
+                .skip(skip)
+                .limit(limit);
         }
 
-        const totalCategories = await Book.countDocuments();
-        const totalPages = limit === 0 ? 0 : Math.ceil(totalCategories / limit)
-        
+        // Count matching books
+        const totalBooks = await Book.countDocuments(query);
+
+        const totalPages = limit === 0
+            ? 0
+            : Math.ceil(totalBooks / limit);
+
         return res.status(200).json({
             success: true,
-            message: "category fetch successfull",
+            message: "Books fetched successfully",
             book,
-            totalPages,
-        })
-
+            totalBooks,
+            totalPages
+        });
 
     } catch (error) {
         console.log(error);
+
         return res.status(500).json({
             success: false,
-            message: "Fetch categories failed due to server error"
+            message: "Fetch books failed due to server error"
         });
     }
 };
