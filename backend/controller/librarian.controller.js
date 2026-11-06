@@ -1,6 +1,8 @@
 import User from "../model/user.model.js";
 import Category from "../model/category.model.js";
 import Book from "../model/book.model.js";
+import BorrowRecord from "../model/borrowRecord.js";
+
 
 export async function getPendingStudents(req, res) {
     try {
@@ -319,6 +321,151 @@ export const getBooks = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Fetch books failed due to server error"
+        });
+    }
+};
+
+
+
+export const createBorrow = async (req, res) => {
+    try {
+
+        const { bookId } = req.body;
+
+        if (!bookId) {
+            return res.status(400).json({
+                success: false,
+                message: "Book ID is required",
+            });
+        }
+
+        const book = await Book.findById(bookId);
+
+        if (!book) {
+            return res.status(404).json({
+                success: false,
+                message: "Book not found",
+            });
+        }
+
+        if (book.quantity <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Book is not available",
+            });
+        }
+
+        // Automatically set return date after 1 month
+        const borrowDate = new Date();
+        const returnDate = new Date(borrowDate);
+        returnDate.setMonth(returnDate.getMonth() + 1);
+
+        const studentId = req.user.id;
+
+        const newBorrow = await BorrowRecord.create({
+            student: studentId,
+            book: bookId,
+            borrowDate,
+            returnDate,
+        });
+
+        book.quantity -= 1;
+        await book.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "Book borrowed successfully. Please return within one month.",
+            data: newBorrow,
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+export const getBorrow = async (req, res) => {
+    try {
+
+        const studentId = req.user.id;
+
+        const borrowRecords = await BorrowRecord.find({
+            student: studentId,
+        })
+            .populate("book", "title author")
+            .sort({ createdAt: -1 });
+
+        const data = borrowRecords.map((record) => {
+
+            const today = new Date();
+
+            // Default values
+            let lateDays = 0;
+            let fineAmount = 0;
+            let daysRemaining = 0;
+
+            if (record.status === "borrowed") {
+
+                // Check if book is late
+                if (today > record.returnDate) {
+
+                    const difference = today - record.returnDate;
+
+                    lateDays = Math.ceil(
+                        difference / (1000 * 60 * 60 * 24)
+                    );
+
+                    fineAmount = lateDays * record.finePerDay;
+
+                } else {
+
+                    const difference = record.returnDate - today;
+
+                    daysRemaining = Math.ceil(
+                        difference / (1000 * 60 * 60 * 24)
+                    );
+                }
+
+            } else {
+
+                // Book already returned
+                if (record.actualReturnDate > record.returnDate) {
+
+                    const difference =
+                        record.actualReturnDate - record.returnDate;
+
+                    lateDays = Math.ceil(
+                        difference / (1000 * 60 * 60 * 24)
+                    );
+
+                    fineAmount = lateDays * record.finePerDay;
+                }
+            }
+
+            return {
+                ...record.toObject(),
+                lateDays,
+                fineAmount,
+                daysRemaining,
+            };
+        });
+
+        return res.status(200).json({
+            success: true,
+            data,
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
         });
     }
 };
